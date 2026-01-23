@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDLC Inixindo Gamification</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- MediaPipe Solutions -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/control_utils/control_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"
+        crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <div class="brand-container">
+                <img src="inixindo-logo.png" alt="Inixindo Logo" class="brand-logo">
+                <div class="header-text">
+                    <h1>SDLC Inixindo Gamification</h1>
+                    <p>Susun tahapan SDLC bersama <strong>Inixindo Jogja</strong>!</p>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button id="check-btn" class="btn primary">Check Structure</button>
+                <button id="reset-btn" class="btn secondary">Reset</button>
+                <button id="sound-btn" class="btn secondary">🔊 Sound On</button>
+                <div class="toggle-container">
+                    <label class="switch">
+                        <input type="checkbox" id="camera-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span>Hand Tracking Mode</span>
+                </div>
+            </div>
+            <div id="loading-spinner" class="hidden">Loading Camera...</div>
+        </header>
+
+        <main class="game-area">
+            <section class="source-panel">
+                <h2>Fase & Opsi</h2>
+                <div id="source-container" class="item-container">
+                    <!-- Items will be injected here via JS -->
+                </div>
+            </section>
+
+            <section class="target-panel">
+                <h2>Urutan Siklus (1-6)</h2>
+                <div id="target-container" class="item-container structure-bin">
+                    <!-- Drop targets will be here -->
+                    <div class="placeholder-text">Drag komponen ke sini</div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Video Element for Camera Feed (Hidden or visualized in corner) -->
+        <div class="camera-feed-container hidden" id="camera-container">
+            <video class="input_video"></video>
+            <canvas class="output_canvas"></canvas>
+        </div>
+
+        <!-- Custom Cursor for Hand Tracking -->
+        <div id="hand-cursor" class="hand-cursor hidden"></div>
+
+        <!-- Siduxi Mascot -->
+        <img src="siduxi.png" alt="Siduxi Assistant" class="siduxi-mascot">
+    </div>
+
+
+    <!-- Canvas for Confetti -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="audio-manager.js"></script>
+    <script src="game-logic.js"></script>
+    <!-- Hand tracking script will be loaded but activated only on toggle -->
+    <script src="hand-tracking.js"></script>
+</body>
+
+</html>
