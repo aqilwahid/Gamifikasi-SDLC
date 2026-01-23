@@ -152,14 +152,18 @@ function tryGrab(x, y) {
     cursor.style.display = '';
 
     const draggable = elements.find(el => el.classList.contains('draggable-item'));
+    const clickable = elements.find(el => el.tagName === 'BUTTON' || el.classList.contains('clickable'));
 
     if (draggable) {
         customDraggingItem = draggable;
+        draggable.classList.add('dragging');
+    } else if (clickable) {
+        // Simple click trigger
+        clickable.click();
 
         // Visual feedback
-        draggable.classList.add('dragging');
-
-        // Calculate offset if needed? For now centered on finger
+        clickable.style.transform = "scale(0.95)";
+        setTimeout(() => clickable.style.transform = "", 150);
     }
 }
 
@@ -191,8 +195,15 @@ function releaseGrab(x, y) {
     customDraggingItem.classList.remove('dragging');
 
     if (dropZone) {
-        // Move in DOM
-        dropZone.appendChild(customDraggingItem);
+        // Prevent re-ordering in target
+        if (dropZone.id === 'target-container' && customDraggingItem.parentNode.id === 'target-container') {
+            // Do not move. Effectively snap back to original position (which is also target container, just updated via appendChild if we proceeded)
+            // But since we are appending, it WOULD change order to bottom. We want to prevent that.
+            // So we do NOTHING.
+        } else {
+            // Move in DOM
+            dropZone.appendChild(customDraggingItem);
+        }
 
         // Handle placeholder logic replicated from game-logic.js
         if (dropZone.id === 'target-container') {

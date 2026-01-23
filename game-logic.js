@@ -21,6 +21,12 @@ const targetContainer = document.getElementById('target-container');
 const checkBtn = document.getElementById('check-btn');
 const resetBtn = document.getElementById('reset-btn');
 const soundBtn = document.getElementById('sound-btn');
+const startOverlay = document.getElementById('start-overlay');
+const startGameBtn = document.getElementById('start-game-btn');
+const resultModal = document.getElementById('result-modal');
+const modalTitle = document.getElementById('modal-title');
+const modalMessage = document.getElementById('modal-message');
+const closeModalBtn = document.getElementById('close-modal-btn');
 
 let draggedItem = null;
 
@@ -72,7 +78,8 @@ function handleDragStart(e) {
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('text/plain', this.getAttribute('data-id'));
 
-    // Start BGM on first interaction
+    // Start BGM on first interaction if not already playing
+    // (Backup if overlay was bypassed somehow, though overlay is primary now)
     audioManager.startBGM();
 }
 
@@ -99,6 +106,15 @@ function setupEventListeners() {
     checkBtn.addEventListener('click', checkStructure);
     resetBtn.addEventListener('click', resetGame);
     soundBtn.addEventListener('click', toggleSound);
+
+    startGameBtn.addEventListener('click', () => {
+        startOverlay.classList.add('hidden');
+        audioManager.startBGM();
+    });
+
+    closeModalBtn.addEventListener('click', () => {
+        resultModal.classList.add('hidden');
+    });
 }
 
 function toggleSound() {
@@ -118,6 +134,11 @@ function handleDropTarget(e) {
     const item = document.querySelector(`[data-id="${id}"]`);
 
     if (item) {
+        // Prevent re-ordering if already in target container
+        if (item.parentNode === targetContainer) {
+            return;
+        }
+
         const placeholder = targetContainer.querySelector('.placeholder-text');
         if (placeholder) {
             placeholder.remove();
@@ -188,22 +209,45 @@ function checkStructure() {
     const totalValidItems = currentItems.filter(i => !i.getAttribute('data-type') || i.getAttribute('data-type') !== 'trap').length;
 
     if (hasTraps) {
-        alert('Ada langkah yang bukan bagian dari SDLC! (Warna Merah)');
+        showModal('Ups, Kurang Tepat! ⚠️', 'Ada langkah yang bukan bagian dari SDLC! Perhatikan item yang berwarna merah.', 'error');
     } else if (!isSequenceCorrect) {
-        alert('Urutan tahapan masih salah.');
+        showModal('Urutan Masih Salah ❌', 'Urutan tahapan SDLC belum benar. Coba ingat-ingat kembali siklusnya.', 'error');
     } else if (totalValidItems < sdlcComponents.length) {
-        alert('Urutan benar, tapi belum lengkap.');
+        showModal('Belum Lengkap 🧩', 'Urutan sudah benar, tapi masih ada tahapan yang kurang.', 'error');
     } else {
         // Perfect Score
         triggerWinEffect();
     }
 }
 
+function showModal(title, message, type) {
+    modalTitle.innerText = title;
+    modalMessage.innerText = message;
+
+    resultModal.className = 'modal'; // Reset classes
+    resultModal.classList.add(type);
+
+    resultModal.classList.remove('hidden');
+
+    if (type === 'success') {
+        closeModalBtn.innerText = "Main Lagi";
+        closeModalBtn.onclick = () => {
+            resultModal.classList.add('hidden');
+            resetGame();
+        };
+    } else {
+        closeModalBtn.innerText = "Tutup";
+        closeModalBtn.onclick = () => {
+            resultModal.classList.add('hidden');
+        };
+    }
+}
+
 function triggerWinEffect() {
-    // Confetti!
-    var duration = 3 * 1000;
+    // Confetti HEBOH!
+    var duration = 5 * 1000;
     var animationEnd = Date.now() + duration;
-    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+    var defaults = { startVelocity: 30, spread: 360, ticks: 100, zIndex: 9999 };
 
     function randomInRange(min, max) {
         return Math.random() * (max - min) + min;
@@ -216,14 +260,21 @@ function triggerWinEffect() {
             return clearInterval(interval);
         }
 
-        var particleCount = 50 * (timeLeft / duration);
-        // since particles fall down, start a bit higher than random
+        var particleCount = 100 * (timeLeft / duration);
+        // Shoot from both corners
         confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
         confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
     }, 250);
 
+    // Shoot from center too
+    confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 }
+    });
+
     audioManager.playSuccessSound();
-    alert('SELAMAT! Anda berhasil menyusun siklus SDLC dengan sempurna!');
+    showModal('LUAR BIASA! 🎉', 'Selamat! Anda berhasil menyusun siklus SDLC dengan sempurna!', 'success');
 }
 
 function resetGame() {
