@@ -1,4 +1,4 @@
-# SDLC Inixindo Gamification 🎮
+# SDLC Inixindo Gamebased Learning 🎮
 
 Game edukasi interaktif untuk mempelajari tahapan **System Development Life Cycle (SDLC)**. Dikembangkan dengan **HTML5, CSS3, dan Vanilla JavaScript**, dilengkapi dengan fitur **Hand Tracking** berbasis Computer Vision.
 
@@ -52,7 +52,7 @@ npx http-server .
 ## 📂 Struktur Folder
 
 ```
-Gamifikasi-SDLC/
+Gamebased-Learning-SDLC/
 ├── index.html          # Struktur utama aplikasi
 ├── style.css           # Styling & Animasi
 ├── game-logic.js       # Logika permainan (Drag-drop, Validasi, Modal)
